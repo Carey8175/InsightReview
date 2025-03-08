@@ -1,10 +1,10 @@
 {
-  "database":
-  {
+  "database": {
     "host": "localhost",
     "port": 9000,
     "user": "default",
     "password": "",
-    "database": "insight_review"
+    "database": "insight_review",
+    "table": "reviews"
   }
 }
