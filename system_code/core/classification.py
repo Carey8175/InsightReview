@@ -1,11 +1,14 @@
+import os
 import joblib
+from system_code.core.config import Config
+
 
 class Classifier:
     def __init__(self):
         # 加载保存的模型
-        self.model = joblib.load('logistic_regression_model.pkl')  # 替换为您的模型路径
+        self.model = joblib.load(os.path.join(Config.STATICS_PATH, 'models', 'logistic_regression_model.pkl'))  # 替换为您的模型路径
         # 加载保存的TF-IDF向量化器
-        self.vectorizer = joblib.load('tfidf_vectorizer.pkl')  # 替换为您的TF-IDF路径
+        self.vectorizer = joblib.load(os.path.join(Config.STATICS_PATH, 'models', 'tfidf_vectorizer.pkl'))   # 替换为您的TF-IDF路径
 
     def predict(self, text: str) -> str:
         """
