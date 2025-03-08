@@ -93,4 +93,68 @@ class RAG:
             results.append(result_list)
         return results
 
+    def rerank(self, query, results: list) -> list:
+        """
+        对检索结果进行重排。
+        
+        参数:
+        - query: 输入的查询文本
+        - results: 检索到的文本列表，每个元素是一个字符串
+        
+        返回:
+        - list: 包含每个文本的重排分数
+        """
+        # 构造请求数据
+        datas = []
+        for result in results:
+            datas.append({
+                "query": query,
+                "content": result,  # 使用文本内容
+                "title": "无"  # 假设没有标题的情况下填充为"无"
+            })
+        
+        request_data = {
+            "datas": datas
+        }
 
+        # 将请求数据转换为 JSON 字符串
+        request_json = json.dumps(request_data)
+        
+        # 使用 prepare_request 来生成签名并发起请求
+        path = "/api/knowledge/service/rerank"
+        info_req = self.prepare_request(method="POST", path=path, data=request_data)
+        
+        # 发送请求
+        response = requests.request(
+            method=info_req.method,
+            url=f"https://{self.domain}{info_req.path}",
+            headers=info_req.headers,
+            data=info_req.body
+        )
+        
+        # 打印调试信息，查看返回的数据结构
+        # print("Response JSON:", response.json())  # 打印完整的响应
+        
+        # 处理响应
+        if response.status_code == 200:
+            response_data = response.json()
+            
+            # 检查是否有返回数据
+            if response_data.get("code") == 0:
+                # 获取返回的分数列表
+                scores = response_data.get("data", {}).get("scores", [])
+                
+                # 判断是否有正确的分数数据
+                if isinstance(scores, list) and len(scores) == len(results):
+                    reranked_results = [{"text": result, "score": float(score)} 
+                                        for result, score in zip(results, scores)]
+                    
+                    reranked_results = sorted(reranked_results, key=lambda x: x['score'], reverse=True)
+
+                    return reranked_results
+                else:
+                    raise Exception("错误：返回的分数数量与结果数量不匹配。")
+            else:
+                raise Exception(f"重排请求失败：{response_data.get('message')}")
+        else:
+            raise Exception(f"请求失败，HTTP 状态码: {response.status_code}, {response.text}")
