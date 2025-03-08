@@ -3,7 +3,7 @@ from datasets import load_dataset
 from peft import LoraConfig, get_peft_model
 
 # 模型名称，替换为你实际使用的模型名称或本地路径
-model_name = "qwen2.53B"
+model_name = "Qwen/Qwen2.5-0.5B"
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", trust_remote_code=True)
 
@@ -22,7 +22,7 @@ model = get_peft_model(model, lora_config)
 model.print_trainable_parameters()  # 查看可训练参数
 
 # 加载预处理后的数据集
-dataset = load_dataset('json', data_files='processed.jsonl', split='train')
+dataset = load_dataset('json', data_files='train.jsonl', split='train')
 
 # 格式化数据，将 instruction 和 input 拼接为模型输入，目标为 output（标题）
 def format_prompt(example):
@@ -45,7 +45,7 @@ tokenized_dataset = dataset.map(tokenize_function, batched=True, remove_columns=
 
 # 定义训练参数
 training_args = TrainingArguments(
-    output_dir="./qwen2.53B-lora-sft",
+    output_dir="./qwen2.5-0.5B-lora-sft",
     per_device_train_batch_size=2,    # 根据显存调整 batch size
     num_train_epochs=3,               # 根据数据量调整 epoch 数
     logging_steps=10,
@@ -67,4 +67,4 @@ trainer = Trainer(
 # 开始微调
 trainer.train()
 # 保存微调后的模型
-model.save_pretrained("./qwen2.53B-lora-sft-final")
+model.save_pretrained("./qwen2.5-0.5B-lora-sft-final")
