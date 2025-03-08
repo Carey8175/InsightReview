@@ -1,3 +1,5 @@
+import os.path
+
 import clickhouse_driver
 from datetime import datetime
 
@@ -13,9 +15,10 @@ class CKClient:
             host=self.config.database['host'],
             port=self.config.database['port'],
             user=self.config.database['user'],
-            password=self.config.database['password'],
-            database=database
+            password=self.config.database['password']
         )
+
+        self.database_validation()
 
     def execute(self, query):
         return self.client.execute(query)
@@ -57,9 +60,66 @@ class CKClient:
 
     def database_validation(self):
         """检测数据库是否正确，表格是否创建，没有创建的话就自动创建"""
+        self.create_database()
+        self.create_table()
+
+        # 如果当前表格为空是否插入数据
+        sql = f"SELECT COUNT(*) FROM {self.config.database['table']}"
+        result = self.execute(sql)
+        if result[0][0] == 0:
+            logger.info('Table product_reviews is empty, inserting data...')
+            for i in range(3):
+                data = pd.read_csv(os.path.join(self.config.STATICS_PATH, 'datasets', 'reviews', 'csv', f'All_Beauty_part_{i+1}.csv'))
+                data = data.astype({
+                    'rating': 'float32',              # 对应 ClickHouse 的 Float32
+                    'title': 'string',                 # 对应 ClickHouse 的 String
+                    'text': 'string',                  # 对应 ClickHouse 的 String
+                    'images': 'object',                # ClickHouse 里是 Array(String)，Pandas 里用 object 处理列表
+                    'asin': 'string',                   # 对应 ClickHouse 的 String
+                    'parent_asin': 'string',            # 对应 ClickHouse 的 String
+                    'user_id': 'string',                 # 对应 ClickHouse 的 String
+                    'timestamp': 'int64',                # 对应 ClickHouse 的 UInt64
+                    'verified_purchase': 'bool',         # 对应 ClickHouse 的 Bool
+                    'helpful_vote': 'int32'              # 对应 ClickHouse 的 UInt32
+                })
+                data = data.fillna("")
+                columns = data.columns.tolist()
+                data = data.values.tolist()
+                self.insert(self.config.database['table'], data, columns=columns)
+            logger.info('Data inserted.')
+
+        logger.info('[CKClient]Database validation completed.')
+
+    def create_database(self):
+        sql = f"CREATE DATABASE IF NOT EXISTS {self.config.database['database']}"
+        self.execute(sql)
+
+        # 链接到数据库
+        self.client.execute(f"USE {self.config.database['database']}")
+        # logger.info(f"Database {self.client.connection.database} created.")
+
+    def create_table(self):
+        sql = f"""
+        CREATE TABLE IF NOT EXISTS {self.config.database['table']}(
+            review_id UUID DEFAULT generateUUIDv4(),
+            rating Float32,
+            title String,
+            text String,
+            images Array(String),
+            asin String,
+            parent_asin String,
+            user_id String,
+            timestamp UInt64,
+            verified_purchase Bool,
+            helpful_vote UInt32
+        ) ENGINE = MergeTree()
+        ORDER BY (timestamp, review_id);
+        """
+
+        self.execute(sql)
+        # logger.info('Table product_reviews created.')
+
 
 
 if __name__ == '__main__':
     ck = CKClient()
-    ck.has_data_for_date('BTC-USDT-SWAP', datetime(2024, 3, 21))
-    ck.close()
