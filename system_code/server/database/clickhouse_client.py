@@ -111,7 +111,10 @@ class CKClient:
             user_id String,
             timestamp UInt64,
             verified_purchase Bool,
-            helpful_vote UInt32
+            helpful_vote UInt32,
+            real_review Bool DEFAULT 0,
+            sentiment String DEFAULT '',
+            summary String DEFAULT ''
         ) ENGINE = MergeTree()
         ORDER BY (timestamp, review_id);
         """
