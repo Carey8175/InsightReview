@@ -12,7 +12,7 @@ class Config:
     def __init__(self):
         self.proxy = None
         self.webhook = None
-        self.database = None
+        self.postgresql = None
         # ---------------
         self.init_config()
 
@@ -25,7 +25,7 @@ class Config:
         with open(self.CONFIG_PATH, 'r') as f:
             config = json.load(f)
 
-        self.database = config['database']
+        self.postgresql = config['database']
 
 
 if __name__ == '__main__':

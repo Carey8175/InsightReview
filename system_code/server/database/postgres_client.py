@@ -42,21 +42,46 @@ class PGClient:
         self.conn.close()
 
     def database_validation(self):
+        db_name = self.config.postgresql['database']
         try:
-            # Create database if not exists
-            conn = psycopg2.connect(
+            # Connect to the default 'postgres' database to check existence/create the target database
+            conn_postgres = psycopg2.connect(
                 host=self.config.postgresql['host'],
                 user=self.config.postgresql['user'],
                 password=self.config.postgresql['password'],
-                port=self.config.postgresql['port']
+                port=self.config.postgresql['port'],
+                database='postgres'
             )
-            conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-            with conn.cursor() as cursor:
-                cursor.execute(sql.SQL("CREATE DATABASE IF NOT EXISTS {}").format(
-                    sql.Identifier(self.config.postgresql['database']))
+            conn_postgres.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+
+            with conn_postgres.cursor() as cursor:
+                # Check if the database exists
+                cursor.execute(sql.SQL("SELECT 1 FROM pg_database WHERE datname = %s"), (db_name,))
+                exists = cursor.fetchone()
+                if not exists:
+                    # Create database if it does not exist
+                    logger.info(f"Database '{db_name}' not found. Creating...")
+                    cursor.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name)))
+                    logger.info(f"Database '{db_name}' created successfully.")
+                else:
+                    logger.info(f"Database '{db_name}' already exists.")
+
+            conn_postgres.close()
+
+            # Now connect to the target database (self.conn should be connected here from __init__)
+            # Ensure self.conn is connected to the correct database
+            if self.conn.closed or self.conn.info.dbname != db_name:
+                if not self.conn.closed:
+                    self.conn.close()
+                self.conn = psycopg2.connect(
+                    host=self.config.postgresql['host'],
+                    port=self.config.postgresql['port'],
+                    user=self.config.postgresql['user'],
+                    password=self.config.postgresql['password'],
+                    database=db_name
                 )
 
-            # Create table if not exists
+            # Create table if not exists in the target database
             self.execute('''
                 CREATE TABLE IF NOT EXISTS beauty_reviews (
                     review_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -75,12 +100,14 @@ class PGClient:
                     summary TEXT DEFAULT ''
                 )
             ''')
-            logger.info('[PGClient] Database validation completed')
+            logger.info('[PGClient] Table validation completed')
         except Exception as e:
             logger.error(f'Database validation failed: {str(e)}')
+            # Attempt to close the main connection if it was opened and an error occurred
+            if hasattr(self, 'conn') and not self.conn.closed:
+                self.conn.close()
 
 
 if __name__ == '__main__':
     client = PGClient()
-    client.database_validation()
     client.close()
