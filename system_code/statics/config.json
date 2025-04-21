@@ -1,11 +1,9 @@
 {
-
-  "database": {
+  "postgresql": {
     "host": "localhost",
-    "port": 9000,
-    "user": "default",
-    "password": "",
-    "database": "insight_review",
-    "table": "reviews"
+    "port": 5432,
+    "user": "admin",
+    "password": "securepassword",
+    "database": "insightreview"
   }
 }
