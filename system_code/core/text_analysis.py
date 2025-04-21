@@ -1,6 +1,8 @@
 import os
 import joblib
 from system_code.core.config import Config
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
 
 
 class SentimentClassifier:
@@ -50,19 +52,65 @@ class BotClassifier:
         return int(prediction)
 
 
+class TitleClassifier:
+    def __init__(self):
+        # Load model and tokenizer from Hugging Face
+        model_name = 'Carey8175/InsightView-Title'
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForCausalLM.from_pretrained(model_name)
+        # Use GPU if available
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model.to(self.device)
+        self.model.eval() # Set model to evaluation mode
+
+        self.eos_token = self.tokenizer.convert_tokens_to_ids('<|im_end|>')
+
+    def predict(self, text: str) -> str:
+        """
+        Predicts the title category for the input text.
+
+        Args:
+            text (str): The input text (e.g., review title).
+
+        Returns:
+            str: The predicted title category.
+        """
+        test = '<|im_start|>' + text + '<|im_end|>\n<|im_start|>'
+
+        inputs = self.tokenizer([text], return_tensors="pt", truncation=True, padding=True, max_length=512).to(self.device)
+
+        generated_ids = self.model.generate(
+            **inputs,
+            temperature=0.01,
+            max_new_tokens=50,
+            eos_token_id=self.eos_token,
+            do_sample=True)
+
+        # Decode the generated tokens to get the predicted class
+        generated_ids_trimmed = [
+            out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+        ]
+
+        output_text = self.tokenizer .batch_decode(
+            generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
+        )
+
+        return output_text
+
 class TextAnalysis:
     def __init__(self):
         self.bot_classifier = BotClassifier()
         self.sentiment_classifier = SentimentClassifier()
+        self.title_classifier = TitleClassifier() # Add title classifier instance
 
     def single_process(self, text: str):
         """执行各项文本分析任务， 返回3种分析结果"""
         sentiment = self.sentiment_classifier.predict(text)
         is_real = self.bot_classifier.predict(text)
+        title = self.title_classifier.predict(text) # Get title prediction
 
 
-
-        return sentiment, is_real, ''
+        return sentiment, is_real, title # Update return value
 
     def text_analyse(self, df):
         """df is a pandas dataframe, include: id, text"""
@@ -71,4 +119,7 @@ class TextAnalysis:
 
 
 if __name__ == "__main__":
+    titles = TitleClassifier()
+    print(titles.predict("I love this product!"))
+
     print(TextAnalysis().single_process("I hate this"))

@@ -1,3 +1,4 @@
+from ast import main
 import psycopg2
 from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
@@ -57,7 +58,7 @@ class PGClient:
 
             # Create table if not exists
             self.execute('''
-                CREATE TABLE IF NOT EXISTS product_reviews (
+                CREATE TABLE IF NOT EXISTS beauty_reviews (
                     review_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                     rating FLOAT,
                     title TEXT,
@@ -77,3 +78,9 @@ class PGClient:
             logger.info('[PGClient] Database validation completed')
         except Exception as e:
             logger.error(f'Database validation failed: {str(e)}')
+
+
+if __name__ == '__main__':
+    client = PGClient()
+    client.database_validation()
+    client.close()
