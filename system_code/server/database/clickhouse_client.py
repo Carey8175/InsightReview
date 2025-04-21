@@ -122,6 +122,11 @@ class CKClient:
         self.execute(sql)
         # logger.info('Table product_reviews created.')
 
+    def analyse_insert_text(self):
+        """df 包含4列：review_id, real_review, sentiment, summary"""
+
+
+        logger.info(f"Inserted {len(data)} rows into table {self.config.database['table']}.")
 
 
 if __name__ == '__main__':
