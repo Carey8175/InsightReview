@@ -5,3 +5,5 @@ requests
 volcengine-python-sdk
 transformers
 torch
+pandas
+tqdm

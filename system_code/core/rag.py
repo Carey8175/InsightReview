@@ -68,8 +68,6 @@ class RAG:
         )
         return rsp.json()
 
-
-
     def retrieval(self, texts: list, topk=5):
         """
         检索相似的文本

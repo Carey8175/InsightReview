@@ -75,7 +75,7 @@ class TitleClassifier:
         Returns:
             str: The predicted title category.
         """
-        test = '<|im_start|>' + text + '<|im_end|>\n<|im_start|>'
+        text = '<|im_start|>' + text + '<|im_end|>\n<|im_start|>'
 
         inputs = self.tokenizer([text], return_tensors="pt", truncation=True, padding=True, max_length=512).to(self.device)
 
@@ -91,11 +91,11 @@ class TitleClassifier:
             out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
         ]
 
-        output_text = self.tokenizer .batch_decode(
+        output_text = self.tokenizer.batch_decode(
             generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
         )
 
-        return output_text
+        return output_text[0]
 
 class TextAnalysis:
     def __init__(self):
@@ -120,6 +120,6 @@ class TextAnalysis:
 
 if __name__ == "__main__":
     titles = TitleClassifier()
-    print(titles.predict("I love this product!"))
+    print(titles.predict("works great on daughter hair"))
 
     print(TextAnalysis().single_process("I hate this"))
