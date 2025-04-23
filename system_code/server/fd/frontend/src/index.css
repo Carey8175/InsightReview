@@ -1,0 +1,214 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --secondary-color: #f3f4f6;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --gradient-primary: linear-gradient(90deg, #4f46e5, #818cf8);
+  --gradient-secondary: linear-gradient(90deg, #ec4899, #8b5cf6);
+  --transition-normal: all 0.3s ease;
+  --transition-fast: all 0.2s ease;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f9fafb;
+  color: var(--text-primary);
+  transition: var(--transition-normal);
+  overflow-x: hidden;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* 组件样式 */
+.card {
+  @apply bg-white rounded-xl shadow-md p-6;
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  transition: var(--transition-normal);
+}
+
+.card:hover {
+  @apply shadow-lg;
+  transform: translateY(-2px);
+  border-color: rgba(79, 70, 229, 0.1);
+}
+
+.btn {
+  @apply px-4 py-2 rounded-md font-medium transition-all duration-200;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: -100%;
+  background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.3s ease;
+}
+
+.btn:hover::after {
+  left: 100%;
+}
+
+.btn-primary {
+  @apply text-white;
+  background-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+}
+
+.btn-secondary {
+  @apply bg-gray-200 text-gray-800;
+}
+
+.btn-secondary:hover {
+  @apply bg-gray-300;
+  transform: translateY(-1px);
+}
+
+.input {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  @apply outline-none ring-2 ring-indigo-500 border-transparent;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+/* 切换开关样式 */
+.toggle-checkbox {
+  right: 0;
+  z-index: 1;
+  border-color: #e2e8f0;
+  transition: all 0.3s;
+}
+
+.toggle-checkbox:checked {
+  right: 4px;
+  border-color: #6366f1;
+}
+
+.toggle-label {
+  transition: background-color 0.3s;
+}
+
+.select {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg;
+  transition: all 0.2s ease;
+}
+
+.select:focus {
+  @apply outline-none ring-2 ring-indigo-500 border-transparent;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+/* 动画效果 */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 图表容器样式 */
+.chart-container {
+  @apply p-4 rounded-xl bg-white;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.chart-container:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* 日期选择器样式覆盖 */
+.react-datepicker-popper {
+  z-index: 10000 !important;
+  position: absolute !important;
+  box-shadow: var(--card-shadow-hover);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 4px !important;
+  animation: fadeIn 0.2s ease-out;
+  transform-origin: top center;
+}
+
+.react-datepicker-wrapper,
+.react-datepicker__input-container {
+  position: relative;
+  z-index: 1000;
+}
+
+.react-datepicker {
+  position: absolute;
+  z-index: 10000 !important;
+  border: 1px solid rgba(229, 231, 235, 0.8) !important;
+  font-family: inherit !important;
+  background-color: white;
+  transition: var(--transition-fast);
+}
+
+/* 美化日期选择器内部样式 */
+.react-datepicker__header {
+  background-color: var(--secondary-color) !important;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8) !important;
+}
+
+.react-datepicker__day--selected {
+  background-color: var(--primary-color) !important;
+  border-radius: 0.3rem;
+  font-weight: 500;
+}
+
+.react-datepicker__day:hover {
+  background-color: rgba(79, 70, 229, 0.1) !important;
+}
+
+/* 页面标题样式 */
+.page-title {
+  @apply text-3xl font-bold mb-6;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.page-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: var(--gradient-secondary);
+  border-radius: 3px;
+}
