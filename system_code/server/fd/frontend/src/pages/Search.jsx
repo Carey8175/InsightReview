@@ -9,6 +9,7 @@ const Search = () => {
   const [error, setError] = useState(null);
   const [useDeepSearch, setUseDeepSearch] = useState(false);
   const [resultLimit, setResultLimit] = useState(10);
+  const [subQueries, setSubQueries] = useState([]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -28,7 +29,15 @@ const Search = () => {
         query,
         limit: resultLimit 
       });
+      
       setResults(response.data.data);
+      
+      // 如果是深度搜索，保存子查询
+      if (useDeepSearch && response.data.sub_queries) {
+        setSubQueries(response.data.sub_queries);
+      } else {
+        setSubQueries([]);
+      }
     } catch (err) {
       console.error('Search error:', err);
       setError(err.response?.data?.error || 'An error occurred during search');
@@ -153,6 +162,25 @@ const Search = () => {
             </svg>
             Search Results
           </h2>
+          
+          {/* 显示子查询 */}
+          {subQueries.length > 0 && (
+            <div className="bg-indigo-50 p-4 rounded-lg mb-4">
+              <h3 className="text-sm font-medium text-indigo-800 mb-2 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Deep Search Subqueries
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {subQueries.map((subQuery, index) => (
+                  <div key={index} className="bg-white px-3 py-1 rounded-full text-sm text-indigo-600 border border-indigo-200 shadow-sm">
+                    {subQuery}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="space-y-4">
             {results.map((result, index) => (
               <div key={index} style={{animationDelay: `${index * 0.05}s`}}>

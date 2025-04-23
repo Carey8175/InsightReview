@@ -139,7 +139,7 @@ class RagSdk:
             results.extend(result)
 
         results.sort(key=lambda x: x['score'], reverse=True)
-        return results[:top_k]  # Return top_k results
+        return sub_queries, results[:top_k]  # Return top_k results
 
 if __name__ == '__main__':
     sdk = RagSdk()

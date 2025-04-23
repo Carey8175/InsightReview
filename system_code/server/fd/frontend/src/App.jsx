@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Search from './pages/Search';
+import SearchDashboard from './pages/SearchDashboard';
 
 function App() {
   const location = useLocation();
@@ -75,6 +76,21 @@ function App() {
                 <span>Search</span>
               </div>
             </NavLink>
+            <NavLink 
+              to="/search-dashboard" 
+              className={({ isActive }) => 
+                `px-3 py-2 rounded-lg transition-all duration-300 ${isActive 
+                  ? (scrolled ? 'bg-indigo-100 text-indigo-700 font-bold' : 'bg-white bg-opacity-20 text-white font-bold') 
+                  : (scrolled ? 'text-gray-700 hover:bg-gray-100' : 'text-white hover:bg-white hover:bg-opacity-10')}`
+              }
+            >
+              <div className="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span>搜索仪表盘</span>
+              </div>
+            </NavLink>
           </div>
         </div>
       </nav>
@@ -83,6 +99,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/search-dashboard" element={<SearchDashboard />} />
         </Routes>
       </main>
 
