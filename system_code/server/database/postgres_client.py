@@ -21,17 +21,26 @@ class PGClient:
         self.database_validation()
 
     def execute(self, query, params=None):
-        with self.conn.cursor() as cursor:
-            cursor.execute(query, params)
-            # Check if the cursor has results to fetch
-            if cursor.description:
-                results = cursor.fetchall()
-                self.conn.commit() # Commit after fetch if needed, though typically SELECT doesn't need commit
-                return results
-            else:
-                # For INSERT, UPDATE, DELETE, etc., commit the transaction
-                self.conn.commit()
-                return None # Indicate no rows returned
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(query, params)
+                # Check if the cursor has results to fetch
+                if cursor.description:
+                    results = cursor.fetchall()
+                    self.conn.commit() # Commit after fetch if needed, though typically SELECT doesn't need commit
+                    return results
+                else:
+                    # For INSERT, UPDATE, DELETE, etc., commit the transaction
+                    self.conn.commit()
+                    return None # Indicate no rows returned
+        except Exception as e:
+            # Rollback the transaction in case of any error
+            self.conn.rollback()
+            # Check if connection is still valid, if not reconnect
+            if self.conn.closed:
+                self.__init__()
+            # Re-raise the exception for the caller to handle
+            raise e
 
     def insert_dataframe(self, table, df):
         # Note: This row-by-row insert can be slow for large dataframes.

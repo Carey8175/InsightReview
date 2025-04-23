@@ -7,3 +7,6 @@ Merchant Review Management System integrates DeepResearch-driven RAG, sentiment 
 3. init database
 4. init data
 5. process and update data
+6. run frontend
+7. run backend
+8. visit website
