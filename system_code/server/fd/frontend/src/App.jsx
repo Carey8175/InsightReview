@@ -121,7 +121,7 @@ function App() {
             
             <div className="text-center md:text-right text-gray-600">
               <p>© {new Date().getFullYear()} Insight Review. All rights reserved.</p>
-              <p className="text-xs mt-1">版本 1.0.0</p>
+              <p className="text-xs mt-1">Version 1.0.0</p>
             </div>
           </div>
         </div>

@@ -34,7 +34,7 @@ code {
     monospace;
 }
 
-/* 组件样式 */
+/* Component Styles */
 .card {
   @apply bg-white rounded-xl shadow-md p-6;
   border: 1px solid rgba(229, 231, 235, 0.5);
@@ -62,10 +62,12 @@ code {
   left: -100%;
   background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: all 0.3s ease;
+  pointer-events: none;
 }
 
 .btn:hover::after {
   left: 100%;
+  pointer-events: none;
 }
 
 .btn-primary {
@@ -98,7 +100,7 @@ code {
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
 }
 
-/* 切换开关样式 */
+/* Toggle Switch Styles */
 .toggle-checkbox {
   right: 0;
   z-index: 1;
@@ -125,7 +127,7 @@ code {
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
 }
 
-/* 动画效果 */
+/* Animation Effects */
 .fade-in {
   animation: fadeIn 0.5s ease-in-out;
 }
@@ -135,7 +137,7 @@ code {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 图表容器样式 */
+/* Chart Container Styles */
 .chart-container {
   @apply p-4 rounded-xl bg-white;
   box-shadow: var(--card-shadow);
@@ -148,7 +150,7 @@ code {
   box-shadow: var(--card-shadow-hover);
 }
 
-/* 日期选择器样式覆盖 */
+/* Date Picker Style Overrides */
 .react-datepicker-popper {
   z-index: 10000 !important;
   position: absolute !important;
@@ -175,7 +177,7 @@ code {
   transition: var(--transition-fast);
 }
 
-/* 美化日期选择器内部样式 */
+/* Beautify Date Picker Internal Styles */
 .react-datepicker__header {
   background-color: var(--secondary-color) !important;
   border-bottom: 1px solid rgba(229, 231, 235, 0.8) !important;
@@ -191,7 +193,7 @@ code {
   background-color: rgba(79, 70, 229, 0.1) !important;
 }
 
-/* 页面标题样式 */
+/* Page Title Styles */
 .page-title {
   @apply text-3xl font-bold mb-6;
   background: var(--gradient-primary);

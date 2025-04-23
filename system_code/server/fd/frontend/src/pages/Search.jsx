@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import SearchResultCard from '../components/SearchResultCard';
 
 const Search = () => {
   const [query, setQuery] = useState('');
@@ -63,6 +64,7 @@ const Search = () => {
                 type="submit" 
                 className="btn btn-primary ml-2 px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105"
                 disabled={loading}
+                style={{ position: 'relative', zIndex: 10 }}
               >
                 {loading ? (
                   <span className="flex items-center">
@@ -153,21 +155,8 @@ const Search = () => {
           </h2>
           <div className="space-y-4">
             {results.map((result, index) => (
-              <div 
-                key={index} 
-                className="card bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-[1.01] border border-gray-100"
-                style={{animationDelay: `${index * 0.05}s`}}
-              >
-                <div className="flex justify-between">
-                  <div className="flex-grow">
-                    <p className="text-gray-700 whitespace-pre-line">{result.text}</p>
-                  </div>
-                  {result.score > 0 && (
-                    <div className="ml-4 text-sm bg-indigo-50 text-indigo-700 px-2 py-1 rounded-full h-fit">
-                      Relevance: {result.score.toFixed(2)}
-                    </div>
-                  )}
-                </div>
+              <div key={index} style={{animationDelay: `${index * 0.05}s`}}>
+                <SearchResultCard result={result} />
               </div>
             ))}
           </div>
