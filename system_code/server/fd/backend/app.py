@@ -8,9 +8,6 @@ from datetime import datetime
 import re
 import psycopg2
 
-# 导入搜索仪表盘蓝图
-from routes.search_dashboard import search_dashboard_bp
-
 # Add parent directory to path to import from system_code
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..')))
 from system_code.server.database.postgres_client import PGClient
@@ -19,9 +16,6 @@ from system_code.core.config import Config
 
 app = Flask(__name__)
 CORS(app)
-
-# 注册蓝图
-app.register_blueprint(search_dashboard_bp, url_prefix='/api/search_dashboard')
 
 # Initialize database client
 db_client = PGClient()
