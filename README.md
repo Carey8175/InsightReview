@@ -19,7 +19,6 @@ After starting the PostgreSQL service, you need to initialize the database table
 5. Initialize Data
 Import the review data into the PostgreSQL database. You can use the pandas library to read the data file and the psycopg2 library to insert the data into the database table. The sample code is as follows:
 ```python
-运行
 import pandas as pd
 from server.database.postgres_client import PostgresClient
 
