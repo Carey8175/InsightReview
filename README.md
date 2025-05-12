@@ -3,7 +3,7 @@ Merchant Review Management System integrates DeepResearch-driven RAG, sentiment 
 
 1. Install Dependencies
 In the project root directory, use the following command to install the required Python dependencies:
-bash```
+```bash
 pip install -r requirements.txt
 ```
 3. Initialize Docker Compose (PostgreSQL)
